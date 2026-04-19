@@ -6,6 +6,16 @@ import { ChevronLeft, ChevronRight, RotateCcw, Save, Skull, Target, Volume2, Vol
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { sounds } from '@/lib/sounds';
 import { signOut } from 'next-auth/react';
 
@@ -38,6 +48,7 @@ export function TopBar() {
 
   const [soundEnabled, setSoundEnabled] = useState(sounds.isEnabled());
   const [saveFeedback, setSaveFeedback] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const toggleSound = () => {
     sounds.toggle();
@@ -48,6 +59,11 @@ export function TopBar() {
     saveGame();
     setSaveFeedback(true);
     setTimeout(() => setSaveFeedback(false), 2000);
+  };
+
+  const handleReset = () => {
+    resetGame();
+    setResetDialogOpen(false);
   };
 
   return (
@@ -99,11 +115,10 @@ export function TopBar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-7 w-7 sm:h-8 sm:w-8 ${
-                  zoneLocked
-                    ? 'text-amber-400 hover:text-amber-300'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`h-7 w-7 sm:h-8 sm:w-8 ${zoneLocked
+                  ? 'text-amber-400 hover:text-amber-300'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 onClick={toggleZoneLock}
               >
                 {zoneLocked ? (
@@ -228,11 +243,10 @@ export function TopBar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`h-7 w-7 sm:h-8 sm:w-8 transition-all duration-300 ${
-                  saveFeedback
-                    ? 'text-green-400 scale-110'
-                    : 'text-muted-foreground hover:text-amber-400'
-                }`}
+                className={`h-7 w-7 sm:h-8 sm:w-8 transition-all duration-300 ${saveFeedback
+                  ? 'text-green-400 scale-110'
+                  : 'text-muted-foreground hover:text-amber-400'
+                  }`}
                 onClick={handleSave}
               >
                 <Save className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -252,7 +266,7 @@ export function TopBar() {
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"
-                onClick={resetGame}
+                onClick={() => setResetDialogOpen(true)}
               >
                 <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
@@ -284,6 +298,27 @@ export function TopBar() {
           </Tooltip>
         </TooltipProvider>
       </div>
+
+      {/* Reset Confirmation Dialog */}
+      <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reiniciar Jogo</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja reiniciar o jogo? <strong className="text-destructive">Todo o seu progresso será permanentemente apagado.</strong> Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReset}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reiniciar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

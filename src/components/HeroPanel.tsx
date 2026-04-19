@@ -131,11 +131,10 @@ export function HeroPanel() {
               onClick={() => {
                 useGameStore.getState().setBuyAmount(opt.value);
               }}
-              className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold rounded transition-colors ${
-                buyAmount === opt.value
+              className={`flex-1 py-1.5 text-[10px] sm:text-xs font-bold rounded transition-colors ${buyAmount === opt.value
                   ? 'bg-amber-700 text-amber-100 shadow-md shadow-amber-900/30'
                   : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
-              }`}
+                }`}
               style={{ pointerEvents: 'auto' }}
             >
               {opt.label}
@@ -145,11 +144,10 @@ export function HeroPanel() {
 
         {/* Click Upgrade */}
         <div className="px-2 pb-2">
-          <div className={`p-2 sm:p-3 rounded-lg border transition-colors duration-200 ${
-            canAffordClickUpgrade
+          <div className={`p-2 sm:p-3 rounded-lg border transition-colors duration-200 ${canAffordClickUpgrade
               ? 'bg-gradient-to-r from-red-950/30 to-transparent border-red-800/40 ring-1 ring-red-500/20'
               : 'bg-muted/30 border-border/30'
-          }`}>
+            }`}>
             <div className="flex items-start gap-2 sm:gap-3">
               <div className="text-2xl sm:text-3xl flex-shrink-0">
                 <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-red-400" />
@@ -180,12 +178,11 @@ export function HeroPanel() {
                 type="button"
                 onClick={handleBuyClickUpgrade}
                 disabled={!canAffordClickUpgrade}
-                className={`w-full text-[10px] sm:text-xs h-9 sm:h-10 font-bold rounded-md border-0 outline-none focus:outline-none ${
-                  buyFlash === 'click-upgrade' ? 'bg-green-700 text-green-100' :
-                  canAffordClickUpgrade
-                    ? 'bg-red-700 hover:bg-red-600 text-red-100 cursor-pointer'
-                    : 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60'
-                }`}
+                className={`w-full text-[10px] sm:text-xs h-9 sm:h-10 font-bold rounded-md border-0 outline-none focus:outline-none ${buyFlash === 'click-upgrade' ? 'bg-green-700 text-green-100' :
+                    canAffordClickUpgrade
+                      ? 'bg-red-700 hover:bg-red-600 text-red-100 cursor-pointer'
+                      : 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60'
+                  }`}
                 style={{ pointerEvents: canAffordClickUpgrade ? 'auto' : 'none' }}
               >
                 🪙 Melhorar — {formatCost(clickUpgradeCost)}
@@ -195,7 +192,7 @@ export function HeroPanel() {
         </div>
 
         {/* Hero list */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-2 pb-2 space-y-1.5 sm:space-y-2" style={{ minHeight: 0 }}>
+        <div className="flex-1 overflow-y-auto custom-scrollbar px-2 pb-2 space-y-1.5 sm:space-y-2 min-h-0 max-h-[calc(50vh-80px)] lg:max-h-none">
           {HEROES.map((heroDef) => {
             const heroState = heroes.find(h => h.id === heroDef.id);
             const level = heroState?.level || 0;
@@ -209,17 +206,15 @@ export function HeroPanel() {
             return (
               <div
                 key={heroDef.id}
-                className={`p-2 sm:p-3 rounded-lg border transition-colors duration-200 ${
-                  isHired
+                className={`p-2 sm:p-3 rounded-lg border transition-colors duration-200 ${isHired
                     ? 'bg-gradient-to-r from-amber-950/20 to-transparent border-amber-800/30'
                     : 'bg-muted/30 border-border/30'
-                } ${canAfford ? 'ring-1 ring-amber-500/30' : ''}`}
+                  } ${canAfford ? 'ring-1 ring-amber-500/30' : ''}`}
               >
                 <div className="flex items-start gap-2 sm:gap-3">
                   <div
-                    className={`text-2xl sm:text-3xl flex-shrink-0 ${
-                      isHired ? '' : 'grayscale opacity-50'
-                    }`}
+                    className={`text-2xl sm:text-3xl flex-shrink-0 ${isHired ? '' : 'grayscale opacity-50'
+                      }`}
                   >
                     {heroDef.emoji}
                   </div>
@@ -274,12 +269,11 @@ export function HeroPanel() {
                     type="button"
                     onClick={() => handleBuyHero(heroDef.id)}
                     disabled={!canAfford}
-                    className={`w-full text-[10px] sm:text-xs h-9 sm:h-10 font-bold rounded-md border-0 outline-none focus:outline-none ${
-                      buyFlash === heroDef.id ? 'bg-green-700 text-green-100' :
-                      canAfford
-                        ? 'bg-amber-700 hover:bg-amber-600 text-amber-100 cursor-pointer'
-                        : 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60'
-                    }`}
+                    className={`w-full text-[10px] sm:text-xs h-9 sm:h-10 font-bold rounded-md border-0 outline-none focus:outline-none ${buyFlash === heroDef.id ? 'bg-green-700 text-green-100' :
+                        canAfford
+                          ? 'bg-amber-700 hover:bg-amber-600 text-amber-100 cursor-pointer'
+                          : 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60'
+                      }`}
                     style={{ pointerEvents: canAfford ? 'auto' : 'none', position: 'relative', zIndex: 2 }}
                   >
                     🪙 {isHired ? `Evoluir${buyAmount > 1 ? ` x${buyAmount === 100 ? 'MAX' : buyAmount}` : ''}` : 'Contratar'} — {formatCost(cost)}
