@@ -1,0 +1,289 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.09 0.02 260);
+  --foreground: oklch(0.92 0.01 260);
+  --card: oklch(0.13 0.02 260);
+  --card-foreground: oklch(0.92 0.01 260);
+  --popover: oklch(0.13 0.02 260);
+  --popover-foreground: oklch(0.92 0.01 260);
+  --primary: oklch(0.75 0.15 60);
+  --primary-foreground: oklch(0.15 0.02 260);
+  --secondary: oklch(0.18 0.02 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+  --muted: oklch(0.18 0.02 260);
+  --muted-foreground: oklch(0.6 0.01 260);
+  --accent: oklch(0.22 0.03 260);
+  --accent-foreground: oklch(0.92 0.01 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.25 0.03 260);
+  --input: oklch(0.25 0.03 260);
+  --ring: oklch(0.75 0.15 60);
+  --chart-1: oklch(0.75 0.15 60);
+  --chart-2: oklch(0.6 0.2 30);
+  --chart-3: oklch(0.5 0.2 150);
+  --chart-4: oklch(0.7 0.15 280);
+  --chart-5: oklch(0.65 0.2 340);
+  --sidebar: oklch(0.11 0.02 260);
+  --sidebar-foreground: oklch(0.92 0.01 260);
+  --sidebar-primary: oklch(0.75 0.15 60);
+  --sidebar-primary-foreground: oklch(0.15 0.02 260);
+  --sidebar-accent: oklch(0.18 0.02 260);
+  --sidebar-accent-foreground: oklch(0.92 0.01 260);
+  --sidebar-border: oklch(0.25 0.03 260);
+  --sidebar-ring: oklch(0.75 0.15 60);
+}
+
+.dark {
+  --background: oklch(0.09 0.02 260);
+  --foreground: oklch(0.92 0.01 260);
+  --card: oklch(0.13 0.02 260);
+  --card-foreground: oklch(0.92 0.01 260);
+  --popover: oklch(0.13 0.02 260);
+  --popover-foreground: oklch(0.92 0.01 260);
+  --primary: oklch(0.75 0.15 60);
+  --primary-foreground: oklch(0.15 0.02 260);
+  --secondary: oklch(0.18 0.02 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+  --muted: oklch(0.18 0.02 260);
+  --muted-foreground: oklch(0.6 0.01 260);
+  --accent: oklch(0.22 0.03 260);
+  --accent-foreground: oklch(0.92 0.01 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.25 0.03 260);
+  --input: oklch(0.25 0.03 260);
+  --ring: oklch(0.75 0.15 60);
+  --chart-1: oklch(0.75 0.15 60);
+  --chart-2: oklch(0.6 0.2 30);
+  --chart-3: oklch(0.5 0.2 150);
+  --chart-4: oklch(0.7 0.15 280);
+  --chart-5: oklch(0.65 0.2 340);
+  --sidebar: oklch(0.11 0.02 260);
+  --sidebar-foreground: oklch(0.92 0.01 260);
+  --sidebar-primary: oklch(0.75 0.15 60);
+  --sidebar-primary-foreground: oklch(0.15 0.02 260);
+  --sidebar-accent: oklch(0.18 0.02 260);
+  --sidebar-accent-foreground: oklch(0.92 0.01 260);
+  --sidebar-border: oklch(0.25 0.03 260);
+  --sidebar-ring: oklch(0.75 0.15 60);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom scrollbar for hero panel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 15, 30, 0.5);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 150, 0.5);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(130, 130, 180, 0.7);
+}
+
+/* Boss shake animation */
+@keyframes boss-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px) rotate(-1deg); }
+  20% { transform: translateX(8px) rotate(1deg); }
+  30% { transform: translateX(-6px) rotate(-0.5deg); }
+  40% { transform: translateX(6px) rotate(0.5deg); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+}
+
+.boss-shake {
+  animation: boss-shake 0.4s ease-out;
+}
+
+/* Boss death animation */
+@keyframes boss-death {
+  0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+  20% { transform: scale(1.1); opacity: 1; filter: brightness(3); }
+  40% { transform: scale(0.9); opacity: 0.8; filter: brightness(2); }
+  60% { transform: scale(1.05); opacity: 0.6; filter: brightness(1.5); }
+  80% { transform: scale(0.95); opacity: 0.3; filter: brightness(1); }
+  100% { transform: scale(0); opacity: 0; filter: brightness(0); }
+}
+
+.boss-death {
+  animation: boss-death 0.8s ease-out forwards;
+}
+
+/* Glow pulse for boss */
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.3)); }
+  50% { filter: drop-shadow(0 0 25px rgba(220, 38, 38, 0.6)); }
+}
+
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Gold coin animation */
+@keyframes gold-float {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  20% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  80% { transform: translateY(-80px) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-120px) scale(0.8); opacity: 0; }
+}
+
+.gold-float {
+  animation: gold-float 1.5s ease-out forwards;
+}
+
+/* Click ripple effect */
+@keyframes click-ripple {
+  0% { transform: scale(0); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.click-ripple {
+  animation: click-ripple 0.5s ease-out forwards;
+}
+
+/* Particle burst */
+@keyframes particle-burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Health bar shimmer */
+@keyframes health-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.health-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(220, 38, 38, 1) 0%,
+    rgba(239, 68, 68, 1) 40%,
+    rgba(255, 150, 150, 0.9) 50%,
+    rgba(239, 68, 68, 1) 60%,
+    rgba(220, 38, 38, 1) 100%
+  );
+  background-size: 200% 100%;
+  animation: health-shimmer 2s linear infinite;
+}
+
+/* Text glow effects */
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 10px rgba(220, 38, 38, 0.5), 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Background glow spots */
+@keyframes bg-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.bg-glow {
+  animation: bg-glow 4s ease-in-out infinite;
+}
+
+/* Low HP pulsing glow */
+@keyframes low-hp-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.8); }
+}
+
+.low-hp-bar {
+  animation: low-hp-pulse 0.8s ease-in-out infinite;
+}
+
+/* Hero card entrance animation */
+@keyframes hero-card-in {
+  0% { transform: translateX(20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Buy button hover glow */
+@keyframes buy-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(180, 130, 30, 0.3); }
+  50% { box-shadow: 0 0 12px rgba(180, 130, 30, 0.5); }
+}
+
+/* Subtle float animation for boss */
+@keyframes boss-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.boss-float {
+  animation: boss-float 3s ease-in-out infinite;
+}
+
+/* Zone transition flash */
+@keyframes zone-flash {
+  0% { opacity: 0; }
+  30% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
