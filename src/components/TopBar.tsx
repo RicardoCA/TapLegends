@@ -82,6 +82,30 @@ export function TopBar() {
     setResetDialogOpen(false);
   };
 
+  const handleLogout = async () => {
+    const state = useGameStore.getState();
+    try {
+      await fetch('/api/game/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gold: state.gold,
+          totalGold: state.totalGold,
+          zone: state.zone,
+          maxZone: state.maxZone,
+          heroes: state.heroes,
+          totalKills: state.totalKills,
+          totalClicks: state.totalClicks,
+          clickUpgradeLevel: state.clickUpgradeLevel,
+          zoneLocked: state.zoneLocked,
+        }),
+      });
+    } catch {
+      // proceed with logout anyway
+    }
+    signOut({ callbackUrl: '/login' });
+  };
+
   return (
     <>
       {/* Desktop Navbar - visible on sm and up */}
@@ -346,9 +370,7 @@ export function TopBar() {
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-red-400"
-                  onClick={() => {
-                    signOut({ callbackUrl: '/login' });
-                  }}
+                  onClick={handleLogout}
                 >
                   <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
@@ -582,9 +604,7 @@ export function TopBar() {
                   <Button
                     variant="ghost"
                     className="w-full justify-start gap-3 h-11 text-red-400 hover:text-red-300"
-                    onClick={() => {
-                      signOut({ callbackUrl: '/login' });
-                    }}
+                    onClick={handleLogout}
                   >
                     <LogOut className="h-5 w-5" />
                     <span>Sair da conta</span>

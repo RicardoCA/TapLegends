@@ -87,6 +87,12 @@ export interface GameState {
   loadFromServer: () => Promise<SaveData | null>;
   resetGame: () => void;
 
+  // Offline earnings
+  offlineEarnings: number | null;
+  offlineSeconds: number;
+  offlineKills: number;
+  dismissOfflineEarnings: () => void;
+
   // Achievements
   clearAchievementNotification: () => void;
   loadAchievements: () => Promise<void>;
@@ -173,6 +179,7 @@ interface SaveData {
   totalClicks: number;
   clickUpgradeLevel: number;
   zoneLocked: boolean;
+  lastLogoutAt?: string | null;
 }
 
 const STORAGE_KEY = 'tap-legends-save-v2';
@@ -201,6 +208,9 @@ export const useGameStore = create<GameState>((set, get) => ({
   newAchievement: null,
   buyAmount: 1,
   zoneLocked: false,
+  offlineEarnings: null,
+  offlineSeconds: 0,
+  offlineKills: 0,
 
   clickBoss: (x: number, y: number) => {
     const state = get();
@@ -689,9 +699,27 @@ export const useGameStore = create<GameState>((set, get) => ({
           const totalDps = calculateTotalDps(heroes);
           const clickDamage = calculateClickDamage(heroes, serverSave.clickUpgradeLevel || 0);
 
+          // Calculate offline earnings based on mob kills
+          // Time to kill one mob = mobHp / totalDps
+          // Gold per kill = getBossGold(zone) / 2
+          const MAX_OFFLINE_SECONDS = 8 * 3600;
+          let offlineGold = 0;
+          let offlineSeconds = 0;
+          let offlineKills = 0;
+          if (serverSave.lastLogoutAt && totalDps > 0) {
+            const elapsedMs = Date.now() - new Date(serverSave.lastLogoutAt).getTime();
+            offlineSeconds = Math.min(elapsedMs / 1000, MAX_OFFLINE_SECONDS);
+            const zone = serverSave.zone || 1;
+            const mobHp = getBossHp(zone);
+            const secondsPerKill = mobHp / totalDps;
+            offlineKills = Math.floor(offlineSeconds / secondsPerKill);
+            const goldPerKill = getBossGold(zone) / 2;
+            offlineGold = Math.floor(offlineKills * goldPerKill);
+          }
+
           set({
-            gold: serverSave.gold || 0,
-            totalGold: serverSave.totalGold || 0,
+            gold: (serverSave.gold || 0) + offlineGold,
+            totalGold: (serverSave.totalGold || 0) + offlineGold,
             zone: serverSave.zone || 1,
             maxZone: serverSave.maxZone || 1,
             heroes,
@@ -706,6 +734,9 @@ export const useGameStore = create<GameState>((set, get) => ({
             totalClicks: serverSave.totalClicks || 0,
             clickUpgradeLevel: serverSave.clickUpgradeLevel || 0,
             zoneLocked: serverSave.zoneLocked || false,
+            offlineEarnings: offlineGold > 0 ? offlineGold : null,
+            offlineSeconds,
+            offlineKills,
           });
           return;
         }
@@ -796,6 +827,10 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
     // Also reset server save
     get().saveToServer();
+  },
+
+  dismissOfflineEarnings: () => {
+    set({ offlineEarnings: null, offlineSeconds: 0, offlineKills: 0 });
   },
 
   clearAchievementNotification: () => {

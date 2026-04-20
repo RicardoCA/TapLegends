@@ -22,6 +22,10 @@ export function Game() {
     gold,
     newAchievement,
     clearAchievementNotification,
+    offlineEarnings,
+    offlineSeconds,
+    offlineKills,
+    dismissOfflineEarnings,
   } = useGameStore();
 
   const dpsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -116,6 +120,45 @@ export function Game() {
         )}
       </AnimatePresence>
 
+      {/* Offline earnings notification */}
+      <AnimatePresence>
+        {offlineEarnings !== null && offlineEarnings > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, y: -30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.85, y: -30 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={dismissOfflineEarnings}
+          >
+            <div className="bg-card border border-amber-500/40 rounded-2xl shadow-2xl px-8 py-6 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+              <span className="text-4xl">⏰</span>
+              <div className="text-center">
+                <div className="text-amber-300 font-bold text-lg">Farm Offline!</div>
+                <div className="text-muted-foreground text-sm mt-1">
+                  Você ficou fora por {formatTime(offlineSeconds)}
+                </div>
+              </div>
+              <div className="bg-amber-950/50 border border-amber-500/30 rounded-xl px-6 py-3 text-center">
+                <div className="text-xs text-muted-foreground mb-1">Ouro coletado</div>
+                <div className="text-amber-400 font-bold text-2xl font-mono">
+                  +{formatNumber(offlineEarnings)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {formatNumber(offlineKills)} mobs derrotados
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">(50% do ouro por kill)</div>
+              <button
+                className="mt-1 px-6 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-sm transition-colors"
+                onClick={dismissOfflineEarnings}
+              >
+                Coletar
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Achievement notification */}
       <AnimatePresence>
         {newAchievement && (
@@ -192,4 +235,13 @@ function formatNumber(num: number): string {
   if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
   if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
   return Math.floor(num).toString();
+}
+
+function formatTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }

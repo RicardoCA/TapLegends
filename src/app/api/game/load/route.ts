@@ -17,6 +17,16 @@ export async function GET() {
       return NextResponse.json({ saveData: null });
     }
 
+    const lastLogoutAt = save.lastLogout ? save.lastLogout.toISOString() : null;
+
+    // Clear lastLogout so offline earnings aren't applied twice
+    if (save.lastLogout) {
+      await db.gameSave.update({
+        where: { userId },
+        data: { lastLogout: null },
+      });
+    }
+
     return NextResponse.json({
       saveData: {
         gold: save.gold,
@@ -28,6 +38,7 @@ export async function GET() {
         clickUpgradeLevel: save.clickUpgradeLevel,
         zoneLocked: save.zoneLocked,
         heroes: JSON.parse(save.heroesJson),
+        lastLogoutAt,
       },
     });
   } catch {
