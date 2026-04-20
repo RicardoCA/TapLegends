@@ -714,7 +714,7 @@ export const useGameStore = create<GameState>((set, get) => ({
             const secondsPerKill = mobHp / totalDps;
             offlineKills = Math.floor(offlineSeconds / secondsPerKill);
             const goldPerKill = getBossGold(zone) / 2;
-            offlineGold = Math.floor(offlineKills * goldPerKill);
+            offlineGold = Math.min(Math.floor(offlineKills * goldPerKill), 5_000_000);
           }
 
           set({
