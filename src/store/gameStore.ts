@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { HEROES } from '@/data/heroes';
 import { getBossHp, getBossGold } from '@/data/bosses';
 import { sounds } from '@/lib/sounds';
+import { getAchievementForZone } from '@/data/achievements';
 
 export interface DamageEvent {
   id: string;
@@ -55,6 +56,10 @@ export interface GameState {
   isBossFight: boolean;
   bossDefeated: boolean;
 
+  // Achievements
+  achievements: string[];
+  newAchievement: string | null;
+
   // UI state
   buyAmount: BuyAmount;
   zoneLocked: boolean;
@@ -81,6 +86,11 @@ export interface GameState {
   saveToServer: () => Promise<void>;
   loadFromServer: () => Promise<SaveData | null>;
   resetGame: () => void;
+
+  // Achievements
+  clearAchievementNotification: () => void;
+  loadAchievements: () => Promise<void>;
+  saveAchievements: () => Promise<void>;
 }
 
 const CRIT_CHANCE = 0.05;
@@ -187,6 +197,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   goldDrops: [],
   isBossFight: false,
   bossDefeated: false,
+  achievements: [],
+  newAchievement: null,
   buyAmount: 1,
   zoneLocked: false,
 
@@ -513,6 +525,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   killBoss: () => {
     const state = get();
     const goldReward = getBossGold(state.zone);
+    const currentZone = state.zone;
 
     const goldDrop: GoldDrop = {
       id: generateId(),
@@ -522,6 +535,16 @@ export const useGameStore = create<GameState>((set, get) => ({
       timestamp: Date.now(),
     };
 
+    // Check for achievement unlock
+    const achievement = getAchievementForZone(currentZone);
+    let newAchievements = state.achievements;
+    let newAchievementName: string | null = null;
+
+    if (achievement && !state.achievements.includes(achievement.id)) {
+      newAchievements = [...state.achievements, achievement.id];
+      newAchievementName = achievement.name;
+    }
+
     set({
       gold: state.gold + goldReward,
       totalGold: state.totalGold + goldReward,
@@ -529,7 +552,14 @@ export const useGameStore = create<GameState>((set, get) => ({
       bossCurrentHp: 0,
       goldDrops: [...state.goldDrops, goldDrop].slice(-5),
       totalKills: state.totalKills + 1,
+      achievements: newAchievements,
+      newAchievement: newAchievementName,
     });
+
+    // Save achievements to server if new one unlocked
+    if (newAchievementName) {
+      get().saveAchievements();
+    }
 
     // Play boss death sound
     sounds.playBossDeath();
@@ -754,6 +784,8 @@ export const useGameStore = create<GameState>((set, get) => ({
       totalClicks: 0,
       clickUpgradeLevel: 0,
       zoneLocked: false,
+      achievements: [],
+      newAchievement: null,
     });
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -762,5 +794,33 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
     // Also reset server save
     get().saveToServer();
+  },
+
+  clearAchievementNotification: () => {
+    set({ newAchievement: null });
+  },
+
+  loadAchievements: async () => {
+    try {
+      const res = await fetch('/api/game/achievements');
+      if (!res.ok) return;
+      const data = await res.json();
+      set({ achievements: data.achievements || [] });
+    } catch {
+      // Silently fail
+    }
+  },
+
+  saveAchievements: async () => {
+    try {
+      const state = get();
+      await fetch('/api/game/achievements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ achievements: state.achievements }),
+      });
+    } catch {
+      // Silently fail
+    }
   },
 }));

@@ -14,11 +14,14 @@ export function Game() {
     cleanupEvents,
     saveGame,
     loadGame,
+    loadAchievements,
     isBossFight,
     clickDamage,
     totalDps,
     totalKills,
     gold,
+    newAchievement,
+    clearAchievementNotification,
   } = useGameStore();
 
   const dpsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -33,8 +36,9 @@ export function Game() {
     if (!loadedRef.current) {
       loadedRef.current = true;
       loadGame();
+      loadAchievements();
     }
-  }, [loadGame]);
+  }, [loadGame, loadAchievements]);
 
   // DPS tick - every 100ms
   useEffect(() => {
@@ -108,6 +112,27 @@ export function Game() {
             className="absolute top-12 sm:top-14 left-1/2 -translate-x-1/2 z-50 px-3 sm:px-4 py-1 sm:py-1.5 bg-green-900/80 border border-green-500/30 rounded-full text-green-300 text-[10px] sm:text-xs font-medium backdrop-blur-sm"
           >
             💾 Jogo salvo!
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Achievement notification */}
+      <AnimatePresence>
+        {newAchievement && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 50 }}
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-purple-900/90 border border-purple-400/50 rounded-lg shadow-lg backdrop-blur-sm"
+            onClick={() => clearAchievementNotification()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏆</span>
+              <div>
+                <div className="text-purple-200 text-xs font-medium">Conquista Desbloqueada!</div>
+                <div className="text-white font-bold">{newAchievement}</div>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

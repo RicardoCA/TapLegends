@@ -29,6 +29,7 @@ model GameSave {
   clickUpgradeLevel Int     @default(0)
   zoneLocked       Boolean  @default(false)
   heroesJson       String   @default("[]")
+  achievementsJson String   @default("[]")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }

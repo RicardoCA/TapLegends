@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
-import { ChevronLeft, ChevronRight, RotateCcw, Save, Skull, Target, Volume2, VolumeX, LogOut, Lock, Unlock, Menu } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, Save, Skull, Target, Volume2, VolumeX, LogOut, Lock, Unlock, Menu, Trophy, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -26,6 +26,9 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { sounds } from '@/lib/sounds';
 import { signOut } from 'next-auth/react';
+import { RankingModal } from '@/components/RankingModal';
+import { AchievementsModal } from '@/components/AchievementsModal';
+import { ACHIEVEMENTS } from '@/data/achievements';
 
 function formatNumber(num: number): string {
   if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
@@ -46,6 +49,9 @@ export function TopBar() {
     totalKills,
     totalClicks,
     zoneLocked,
+    achievements,
+    newAchievement,
+    clearAchievementNotification,
     prevZone,
     nextZone,
     saveGame,
@@ -57,6 +63,8 @@ export function TopBar() {
   const [saveFeedback, setSaveFeedback] = useState(false);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [rankingOpen, setRankingOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
 
   const toggleSound = () => {
     sounds.toggle();
@@ -287,6 +295,49 @@ export function TopBar() {
             </Tooltip>
           </TooltipProvider>
 
+          {/* Ranking */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-amber-400"
+                  onClick={() => setRankingOpen(true)}
+                >
+                  <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Ranking de Moedas</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Achievements */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-purple-400 relative"
+                  onClick={() => setAchievementsOpen(true)}
+                >
+                  <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  {achievements.length > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 bg-purple-500 text-white text-[8px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center">
+                      {achievements.length}
+                    </span>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Conquistas ({achievements.length}/{ACHIEVEMENTS.length})</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* Sign out */}
           <TooltipProvider>
             <Tooltip>
@@ -504,6 +555,32 @@ export function TopBar() {
 
                   <Button
                     variant="ghost"
+                    className="w-full justify-start gap-3 h-11"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setRankingOpen(true);
+                    }}
+                  >
+                    <Trophy className="h-5 w-5 text-amber-400" />
+                    <span>Ranking de Moedas</span>
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 h-11"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setAchievementsOpen(true);
+                    }}
+                  >
+                    <Award className="h-5 w-5 text-purple-400" />
+                    <span>Conquistas ({achievements.length}/{ACHIEVEMENTS.length})</span>
+                  </Button>
+
+                  <Separator className="my-2" />
+
+                  <Button
+                    variant="ghost"
                     className="w-full justify-start gap-3 h-11 text-red-400 hover:text-red-300"
                     onClick={() => {
                       signOut({ callbackUrl: '/login' });
@@ -539,6 +616,12 @@ export function TopBar() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Ranking Modal */}
+      <RankingModal open={rankingOpen} onOpenChange={setRankingOpen} />
+
+      {/* Achievements Modal */}
+      <AchievementsModal open={achievementsOpen} onOpenChange={setAchievementsOpen} unlockedAchievements={achievements} />
     </>
   );
 }
