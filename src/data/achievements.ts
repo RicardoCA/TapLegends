@@ -1,3 +1,5 @@
+import { getBossDefinition } from './bosses';
+
 export interface AchievementDefinition {
     id: string;
     name: string;
@@ -7,8 +9,7 @@ export interface AchievementDefinition {
     isBoss: boolean;
 }
 
-// Achievements are unlocked by defeating mobs/bosses in each zone
-// Zone 5, 10, 15, etc. are boss zones
+// Static achievements for zones 1-35
 export const ACHIEVEMENTS: AchievementDefinition[] = [
     // Zones 1-5
     {
@@ -299,10 +300,77 @@ export const ACHIEVEMENTS: AchievementDefinition[] = [
     },
 ];
 
+// Procedural achievement generation for zones > 35
+
+const ACH_MOB_VERBS = [
+    'Caçador', 'Destruidor', 'Algoz', 'Terror', 'Vencedor',
+    'Domador', 'Exterminador', 'Matador', 'Sobrevivente', 'Guerreiro',
+];
+
+const ACH_BOSS_TITLES = [
+    'Lendário', 'Épico', 'Mítico', 'Supremo', 'Invencível',
+    'Absoluto', 'Imortal', 'Transcendente', 'Celestial', 'Divino',
+];
+
+function toTitleCase(str: string): string {
+    return str.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+}
+
+function generateAchievementForZone(zone: number): AchievementDefinition {
+    const boss = getBossDefinition(zone);
+    const isBoss = zone % 5 === 0;
+
+    let name: string;
+    if (isBoss) {
+        // Boss index relative to the first procedural boss achievement (zone 40)
+        const i = Math.floor(zone / 5) - 8; // zone 40 → 0, zone 45 → 1, ...
+        const title = ACH_BOSS_TITLES[i % ACH_BOSS_TITLES.length];
+        name = `${title}: ${toTitleCase(boss.name)}`;
+    } else {
+        const i = zone - 36; // zone 36 → 0
+        const verb = ACH_MOB_VERBS[i % ACH_MOB_VERBS.length];
+        name = `${verb}: ${boss.name}`;
+    }
+
+    return {
+        id: `zone_${zone}`,
+        name,
+        description: `Derrote ${isBoss ? 'o chefe ' : ''}${boss.name} na Zona ${zone}`,
+        icon: boss.emoji,
+        zoneRequired: zone,
+        isBoss,
+    };
+}
+
 export function getAchievementById(id: string): AchievementDefinition | undefined {
-    return ACHIEVEMENTS.find(a => a.id === id);
+    const staticResult = ACHIEVEMENTS.find(a => a.id === id);
+    if (staticResult) return staticResult;
+
+    const match = id.match(/^zone_(\d+)$/);
+    if (match) {
+        const zone = parseInt(match[1]);
+        if (zone > 35) return generateAchievementForZone(zone);
+    }
+
+    return undefined;
 }
 
 export function getAchievementForZone(zone: number): AchievementDefinition | undefined {
-    return ACHIEVEMENTS.find(a => a.zoneRequired === zone);
+    if (zone <= 35) {
+        return ACHIEVEMENTS.find(a => a.zoneRequired === zone);
+    }
+    return generateAchievementForZone(zone);
+}
+
+/**
+ * Returns a list of achievement definitions for zones 1..maxZone.
+ * Used by the UI to render the achievements list dynamically.
+ */
+export function getAchievementsUpToZone(maxZone: number): AchievementDefinition[] {
+    const result: AchievementDefinition[] = [];
+    for (let z = 1; z <= maxZone; z++) {
+        const ach = getAchievementForZone(z);
+        if (ach) result.push(ach);
+    }
+    return result;
 }

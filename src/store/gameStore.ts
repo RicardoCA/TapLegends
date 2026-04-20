@@ -489,6 +489,8 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   nextZone: () => {
     const state = get();
+    // Block advancing to an unvisited zone if the current creature hasn't been defeated
+    if (state.zone >= state.maxZone && !state.bossDefeated) return;
     const nextZone = state.zone + 1;
     const hp = getBossHp(nextZone);
     const isBoss = nextZone % 5 === 0;

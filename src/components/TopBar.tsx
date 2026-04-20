@@ -28,7 +28,6 @@ import { sounds } from '@/lib/sounds';
 import { signOut } from 'next-auth/react';
 import { RankingModal } from '@/components/RankingModal';
 import { AchievementsModal } from '@/components/AchievementsModal';
-import { ACHIEVEMENTS } from '@/data/achievements';
 
 function formatNumber(num: number): string {
   if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
@@ -46,6 +45,7 @@ export function TopBar() {
     totalDps,
     clickDamage,
     isBossFight,
+    bossDefeated,
     totalKills,
     totalClicks,
     zoneLocked,
@@ -121,7 +121,7 @@ export function TopBar() {
             size="icon"
             className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-foreground"
             onClick={nextZone}
-            disabled={zone >= maxZone + 1}
+            disabled={zone >= maxZone && !bossDefeated}
           >
             <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </Button>
@@ -333,7 +333,7 @@ export function TopBar() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Conquistas ({achievements.length}/{ACHIEVEMENTS.length})</p>
+                <p>Conquistas ({achievements.length} desbloqueadas)</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -395,7 +395,7 @@ export function TopBar() {
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={nextZone}
-            disabled={zone >= maxZone + 1}
+            disabled={zone >= maxZone && !bossDefeated}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -574,7 +574,7 @@ export function TopBar() {
                     }}
                   >
                     <Award className="h-5 w-5 text-purple-400" />
-                    <span>Conquistas ({achievements.length}/{ACHIEVEMENTS.length})</span>
+                    <span>Conquistas ({achievements.length} desbloqueadas)</span>
                   </Button>
 
                   <Separator className="my-2" />
@@ -621,7 +621,7 @@ export function TopBar() {
       <RankingModal open={rankingOpen} onOpenChange={setRankingOpen} />
 
       {/* Achievements Modal */}
-      <AchievementsModal open={achievementsOpen} onOpenChange={setAchievementsOpen} unlockedAchievements={achievements} />
+      <AchievementsModal open={achievementsOpen} onOpenChange={setAchievementsOpen} unlockedAchievements={achievements} maxZone={maxZone} />
     </>
   );
 }

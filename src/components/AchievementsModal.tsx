@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Award, Loader2, Lock, Unlock } from 'lucide-react';
+import { Award, Lock, Unlock } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -9,17 +8,18 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { ACHIEVEMENTS } from '@/data/achievements';
+import { getAchievementsUpToZone } from '@/data/achievements';
 
 interface AchievementsModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     unlockedAchievements: string[];
+    maxZone: number;
 }
 
-export function AchievementsModal({ open, onOpenChange, unlockedAchievements }: AchievementsModalProps) {
+export function AchievementsModal({ open, onOpenChange, unlockedAchievements, maxZone }: AchievementsModalProps) {
     const unlockedSet = new Set(unlockedAchievements);
-    const totalAchievements = ACHIEVEMENTS.length;
+    const achievements = getAchievementsUpToZone(maxZone);
     const unlockedCount = unlockedAchievements.length;
 
     return (
@@ -30,7 +30,7 @@ export function AchievementsModal({ open, onOpenChange, unlockedAchievements }: 
                         <Award className="h-5 w-5" />
                         Conquistas
                         <Badge variant="outline" className="ml-auto">
-                            {unlockedCount}/{totalAchievements}
+                            {unlockedCount}/{achievements.length}
                         </Badge>
                     </DialogTitle>
                 </DialogHeader>
@@ -41,7 +41,7 @@ export function AchievementsModal({ open, onOpenChange, unlockedAchievements }: 
 
                 <div className="flex-1 overflow-y-auto">
                     <div className="space-y-1">
-                        {ACHIEVEMENTS.map((achievement) => {
+                        {achievements.map((achievement) => {
                             const isUnlocked = unlockedSet.has(achievement.id);
                             return (
                                 <div
@@ -93,9 +93,10 @@ export function AchievementsModal({ open, onOpenChange, unlockedAchievements }: 
                 </div>
 
                 <div className="text-xs text-muted-foreground text-center pt-2 border-t">
-                    🏆 {unlockedCount} de {totalAchievements} conquistas desbloqueadas
-                    <br />
-                    Progresso: {Math.round((unlockedCount / totalAchievements) * 100)}%
+                    🏆 {unlockedCount} de {achievements.length} conquistas desbloqueadas
+                    {achievements.length > 0 && (
+                        <> · {Math.round((unlockedCount / achievements.length) * 100)}%</>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>
